@@ -62,38 +62,8 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferSubData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
-import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_INFO_LOG_LENGTH;
-import static org.lwjgl.opengl.GL20.GL_VALIDATE_STATUS;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
-import static org.lwjgl.opengl.GL20.glAttachShader;
-import static org.lwjgl.opengl.GL20.glBlendEquationSeparate;
-import static org.lwjgl.opengl.GL20.glCompileShader;
-import static org.lwjgl.opengl.GL20.glCreateProgram;
-import static org.lwjgl.opengl.GL20.glCreateShader;
-import static org.lwjgl.opengl.GL20.glDeleteProgram;
-import static org.lwjgl.opengl.GL20.glDeleteShader;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glGetAttribLocation;
-import static org.lwjgl.opengl.GL20.glGetProgram;
-import static org.lwjgl.opengl.GL20.glGetProgramInfoLog;
-import static org.lwjgl.opengl.GL20.glGetShader;
-import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glLinkProgram;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glUniform1;
-import static org.lwjgl.opengl.GL20.glUniform1i;
-import static org.lwjgl.opengl.GL20.glUniform2;
-import static org.lwjgl.opengl.GL20.glUniform3;
-import static org.lwjgl.opengl.GL20.glUniform4;
-import static org.lwjgl.opengl.GL20.glUniformMatrix2;
-import static org.lwjgl.opengl.GL20.glUniformMatrix3;
-import static org.lwjgl.opengl.GL20.glUniformMatrix4;
-import static org.lwjgl.opengl.GL20.glUseProgram;
-import static org.lwjgl.opengl.GL20.glValidateProgram;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glUniform4iv;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
@@ -231,7 +201,7 @@ class GlContextLwjgl implements GlContext
         glLinkProgram(glProgram);
         glValidateProgram(glProgram);
 
-        int validateStatus = glGetProgram(glProgram, GL_VALIDATE_STATUS);
+        int validateStatus = glGetProgrami(glProgram, GL_VALIDATE_STATUS);
         if (validateStatus != GL_TRUE)
         {
             printProgramLogInfo(glProgram);
@@ -252,9 +222,9 @@ class GlContextLwjgl implements GlContext
     private Integer createGlShader(int shaderType, String shaderSource)
     {
         int glShader = glCreateShader(shaderType);
-        glShaderSource(glShader, shaderSource);
+        glShaderSource(glShader, "#version 120" + System.lineSeparator() + shaderSource);
         glCompileShader(glShader);
-        int compileStatus = glGetShader(glShader, GL_COMPILE_STATUS);
+        int compileStatus = glGetShaderi(glShader, GL_COMPILE_STATUS);
         if (compileStatus != GL_TRUE)
         {
             printShaderLogInfo(glShader);
@@ -332,25 +302,25 @@ class GlContextLwjgl implements GlContext
             case GltfConstants.GL_UNSIGNED_INT:
             {
                 IntBuffer b = putIntBuffer(value);
-                glUniform1(location, b);
+                glUniform1iv(location, b);
                 break;
             }
             case GltfConstants.GL_INT_VEC2:
             {
                 IntBuffer b = putIntBuffer(value);
-                glUniform2(location, b);
+                glUniform2iv(location, b);
                 break;
             }
             case GltfConstants.GL_INT_VEC3:
             {
                 IntBuffer b = putIntBuffer(value);
-                glUniform3(location, b);
+                glUniform3iv(location, b);
                 break;
             }
             case GltfConstants.GL_INT_VEC4:
             {
                 IntBuffer b = putIntBuffer(value);
-                glUniform4(location, b);
+                glUniform4iv(location, b);
                 break;
             }
             default:
@@ -372,25 +342,25 @@ class GlContextLwjgl implements GlContext
             case GltfConstants.GL_FLOAT:
             {
                 FloatBuffer b = putFloatBuffer(value);
-                glUniform1(location, b);
+                glUniform1fv(location, b);
                 break;
             }
             case GltfConstants.GL_FLOAT_VEC2:
             {
                 FloatBuffer b = putFloatBuffer(value);
-                glUniform2(location, b);
+                glUniform2fv(location, b);
                 break;
             }
             case GltfConstants.GL_FLOAT_VEC3:
             {
                 FloatBuffer b = putFloatBuffer(value);
-                glUniform3(location, b);
+                glUniform3fv(location, b);
                 break;
             }
             case GltfConstants.GL_FLOAT_VEC4:
             {
                 FloatBuffer b = putFloatBuffer(value);
-                glUniform4(location, b);
+                glUniform4fv(location, b);
                 break;
             }
             default:
@@ -414,19 +384,19 @@ class GlContextLwjgl implements GlContext
             case GltfConstants.GL_FLOAT_MAT2:
             {
                 FloatBuffer b = putFloatBuffer(value);
-                glUniformMatrix2(location, false, b);
+                glUniformMatrix2fv(location, false, b);
                 break;
             }
             case GltfConstants.GL_FLOAT_MAT3:
             {
                 FloatBuffer b = putFloatBuffer(value);
-                glUniformMatrix3(location, false, b);
+                glUniformMatrix3fv(location, false, b);
                 break;
             }
             case GltfConstants.GL_FLOAT_MAT4:
             {
                 FloatBuffer b = putFloatBuffer(value);
-                glUniformMatrix4(location, false, b);
+                glUniformMatrix4fv(location, false, b);
                 break;
             }
             default:
@@ -631,7 +601,7 @@ class GlContextLwjgl implements GlContext
         IntBuffer infoLogLength = ByteBuffer.allocateDirect(4)
             .order(ByteOrder.nativeOrder())
             .asIntBuffer();
-        glGetShader(id, GL_INFO_LOG_LENGTH, infoLogLength);
+        glGetShaderiv(id, GL_INFO_LOG_LENGTH, infoLogLength);
         if (infoLogLength.get(0) > 0)
         {
             infoLogLength.put(0, infoLogLength.get(0)-1);
@@ -659,7 +629,7 @@ class GlContextLwjgl implements GlContext
         IntBuffer infoLogLength = ByteBuffer.allocateDirect(4)
             .order(ByteOrder.nativeOrder())
             .asIntBuffer();
-        glGetProgram(id, GL_INFO_LOG_LENGTH, infoLogLength);
+        glGetProgramiv(id, GL_INFO_LOG_LENGTH, infoLogLength);
         if (infoLogLength.get(0) > 0)
         {
             infoLogLength.put(0, infoLogLength.get(0)-1);
